@@ -2,12 +2,123 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
     font-weight: normal;
-    background: #4B88A2;
-    color: #0F0F0F;
+    background: #F87060;
+    color: #EFEFEF;
 }
 
 h1 {
-    font-size: 200%;
+    font-family: "Candara", sans-serif;
+    font-size: 52px;
     font-weight: bold;
     text-align: center;
 }
+
+#gameModeLabel {
+    margin-left: 10px;
+    text-align: left;
+    font-size: 20px;
+    font-family: "Candara", sans-serif;
+    font-weight: bold;
+}
+
+#gameModeButtons {
+    text-align: center;
+}
+
+#gameModeButtons input[type="checkbox"] {
+    display: none;
+}
+
+#gameModeButtons .gameModeButton {
+    display: inline-block;
+    width: 20vw;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    border: 3px solid #EFEFEF;
+    border-radius: 4px;
+    color: #EFEFEF;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#gameModeButtons input[type="checkbox"]:checked + .gameModeButton {
+    background-color: #EFEFEF;
+    color: #F87060;
+}
+
+#enterPlayerNames {
+    display: none;
+}
+
+#playerNameLabel {
+    margin-left: 10px;
+    text-align: left;
+    font-size: 20px;
+    font-family: "Candara", sans-serif;
+    font-weight: bold;
+}
+
+#playerNameTextboxes {
+    text-align: center;
+}
+
+#playerNameTextboxes .playerNameTextbox {
+    display: inline-block;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    width: 20vw;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: 3px solid #EFEFEF;
+    border-radius: 4px;
+}
+
+#startButtons {
+    text-align: center;
+    display: none;
+}
+
+#startButtons input {
+    font-family: "Trebuchet MS", sans-serif;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    width: 20vw;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: 3px solid #EFEFEF;
+    border-radius: 4px;
+    background-color: #F87060;
+    color: #EFEFEF;
+}
+
+#startButtons input:hover {
+    cursor: pointer;
+    border: 3px solid #E7E6E6;
+    border-radius: 4px;
+    background-color: #FF8877;
+    color: #E7E6E6;
+}
+
+#errorMessage {
+    display: none;
+    text-align: center;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    color: #040228;
+}
+
+#game_window {
+    text-align: center;
+    display: none;
+}
+
+
