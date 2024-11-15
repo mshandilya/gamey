@@ -1,11 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Game of Y</title>
-  <link ref="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Game of Y</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.1/lib/p5.min.js"></script>
+    <script src="utility.js"></script>
 </head>
 <body>
-  <h1>The Game of Y</h1>
+    <h1>The Game of Y</h1>
+
+    <div id="game_setup">
+
+        <div id="selectGameMode">
+            <span id="gameModeLabel">Play with:</span><br/>
+            <p id="gameModeButtons">
+                <label><input type="checkbox" name="gameMode" value="friend" class="gameModeButton"><span class="gameModeButton">Friend</span></label>
+                <label><input type="checkbox" name="gameMode" value="mdp" class="gameModeButton"><span class="gameModeButton">AI (MDP-based)</span></label>
+                <label><input type="checkbox" name="gameMode" value="minimax" class="gameModeButton"><span class="gameModeButton">AI (Minimax-based)</span></label>
+                <label><input type="checkbox" name="gameMode" value="amaf" class="gameModeButton"><span class="gameModeButton">AI (AMAF-based)</span></label>
+            </p>
+        </div>
+
+        <div id="enterPlayerNames">
+            <span id="playerNameLabel">Enter the players' name:</span><br/>
+            <p id="playerNameTextboxes">
+                <label><input type="text" id="playerName1" class="playerNameTextbox" placeholder="Enter player 1's name"></label>
+                <label><input type="text" id="playerName2" class="playerNameTextbox" placeholder="Enter player 2's name"></label>
+            </p>
+        </div>
+        <br/>
+
+        <p id="startButtons">
+            <label><input type="button" name="startButton" title="Start Game" value="Start Game"></label>
+        </p>
+        <br/>
+
+        <p id="errorMessage">
+            <span class="message"></span>
+        </p>
+
+    </div>
+
+    <div id="game_window">
+        <div id="gameCanvas">
+
+        </div>
+    </div>
+
 </body>
 </html>
