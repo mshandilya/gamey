@@ -61,7 +61,7 @@ function draw() {
 
 function startGame() {
     gameStarted = true;
-    game = Game("93Board", nnodes, adjacencyList);
+    game = app.Game("93Board", nnodes, adjacencyList);
     document.getElementById("game_setup").style.display = "none";
     document.getElementById("game_window").style.display = "flex";
     $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
