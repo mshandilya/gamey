@@ -1,5 +1,8 @@
+import * as app from './app.js';
+
 let gameStarted = false;
 let gameFinished = false;
+let game;
 let currentPlayer = 1;
 let selectedMode = "none";
 let p1name = "";
@@ -54,6 +57,43 @@ function drawBoard() {
 function draw() {
     background(color(248, 112, 96));
     drawBoard();
+}
+
+function startGame() {
+    gameStarted = true;
+    game = Game("93Board", nnodes, adjacencyList);
+    document.getElementById("game_setup").style.display = "none";
+    document.getElementById("game_window").style.display = "flex";
+    $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
+    $("#player2Stats .playerNameTurnText").text(p2name);
+    if((currentPlayer&humanPlayer)===0)
+        makeAImove();
+}
+
+function mousePressed() {
+    if(gameStarted && (currentPlayer&humanPlayer)>0 && !gameFinished) {
+        for (let node = 0; node < nnodes; node++)
+            if (dist(mouseX, mouseY, nodes[node].x, nodes[node].y) < 10 && nodes[node].player === 0) {
+                nodes[node].player = currentPlayer;
+                currentPlayer = 3 - currentPlayer;
+                redraw();
+                checkWin();
+                if(!gameFinished) {
+                    if (currentPlayer === 1) {
+                        $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
+                        $("#player2Stats .playerNameTurnText").text(p2name);
+                    } else {
+                        $("#player1Stats .playerNameTurnText").text(p1name);
+                        $("#player2Stats .playerNameTurnText").text(p2name + "'s turn");
+                    }
+                    if (humanPlayer !== 3) {
+                        app.makeAImove();
+                    }
+                    checkWin();
+                }
+                return;
+            }
+    }
 }
 
 $(document).ready(function () {
@@ -177,48 +217,5 @@ $(document).ready(function () {
                 break;
         }
     });
+
 });
-
-function startGame() {
-    gameStarted = true;
-    document.getElementById("game_setup").style.display = "none";
-    document.getElementById("game_window").style.display = "flex";
-    $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
-    $("#player2Stats .playerNameTurnText").text(p2name);
-}
-
-function mousePressed() {
-    if(gameStarted && (currentPlayer&humanPlayer)>0 && !gameFinished) {
-        for (let node = 0; node < nnodes; node++)
-            if (dist(mouseX, mouseY, nodes[node].x, nodes[node].y) < 10 && nodes[node].player === 0) {
-                nodes[node].player = currentPlayer;
-                currentPlayer = 3 - currentPlayer;
-                redraw();
-                checkWin();
-                if(!gameFinished) {
-                    if (currentPlayer === 1) {
-                        $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
-                        $("#player2Stats .playerNameTurnText").text(p2name);
-                    } else {
-                        $("#player1Stats .playerNameTurnText").text(p1name);
-                        $("#player2Stats .playerNameTurnText").text(p2name + "'s turn");
-                    }
-                    if (humanPlayer !== 3) {
-                        makeAImove();
-                    }
-                    checkWin();
-                }
-                return;
-            }
-    }
-}
-
-function makeAImove() {
-    if((currentPlayer&humanPlayer)===0) {
-
-    }
-}
-
-function checkWin() {
-
-}
