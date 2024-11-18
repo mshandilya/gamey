@@ -1,8 +1,10 @@
 let gameStarted = false;
+let gameFinished = false;
 let currentPlayer = 1;
 let selectedMode = "none";
 let p1name = "";
 let p2name = "";
+let humanPlayer = 0;
 
 let canvasSize = 500;
 let nodes = [];
@@ -56,7 +58,7 @@ function draw() {
 
 $(document).ready(function () {
 
-    $("input[type='checkbox']").on("change", function (){
+    $("#selectGameMode input[type='checkbox']").on("change", function (){
         let $box = $(this);
         if ($box.is(":checked")) {
             $("input:checkbox[name='gameMode']").prop("checked", false);
@@ -72,6 +74,7 @@ $(document).ready(function () {
         selectedMode = val;
         switch (selectedMode) {
             case "friend":
+                document.getElementById("selectFirstPlayer").style.display = "none";
                 document.getElementById("enterPlayerNames").style.display = "inline";
                 $("#playerName1").attr("placeholder", "Enter player 1's name");
                 document.getElementById("playerName1").style.display = "inline";
@@ -81,6 +84,7 @@ $(document).ready(function () {
             case "mdp":
             case "minimax":
             case "amaf":
+                document.getElementById("selectFirstPlayer").style.display = "flex";
                 document.getElementById("enterPlayerNames").style.display = "inline";
                 $("#playerName1").attr("placeholder", "Enter player's name");
                 document.getElementById("playerName1").style.display = "inline";
@@ -104,11 +108,51 @@ $(document).ready(function () {
                 else {
                     $("#errorMessage span").text("");
                     p1name = document.getElementById("playerName1").value;
+                    p2name = document.getElementById("playerName2").value;
+                    humanPlayer = 3; // both are human players
                     startGame();
                 }
                 break;
             case "mdp":
+                if(document.getElementById("playerName1").value === "") {
+                    $("#errorMessage span").text("Uh-oh! Please enter the player's name!");
+                    document.getElementById("errorMessage").style.display = "block";
+                }
+                else {
+                    $("#errorMessage span").text("");
+                    if($("#firstPlayerCheckbox").prop("checked")) {
+                        p1name = document.getElementById("playerName1").value;
+                        p2name = "AI (MDP-based)";
+                        humanPlayer = 1; // player 1 is human player
+                    }
+                    else {
+                        p2name = document.getElementById("playerName1").value;
+                        p1name = "AI (MDP-based)";
+                        humanPlayer = 2; // player 2 is human player
+                    }
+                    startGame();
+                }
+                break;
             case "minimax":
+                if(document.getElementById("playerName1").value === "") {
+                    $("#errorMessage span").text("Uh-oh! Please enter the player's name!");
+                    document.getElementById("errorMessage").style.display = "block";
+                }
+                else {
+                    $("#errorMessage span").text("");
+                    if($("#firstPlayerCheckbox").prop("checked")) {
+                        p1name = document.getElementById("playerName1").value;
+                        p2name = "AI (Minimax-based)";
+                        humanPlayer = 1; // player 1 is human player
+                    }
+                    else {
+                        p2name = document.getElementById("playerName1").value;
+                        p1name = "AI (Minimax-based)";
+                        humanPlayer = 2; // player 2 is human player
+                    }
+                    startGame();
+                }
+                break;
             case "amaf":
                 if(document.getElementById("playerName1").value === "") {
                     $("#errorMessage span").text("Uh-oh! Please enter the player's name!");
@@ -116,8 +160,16 @@ $(document).ready(function () {
                 }
                 else {
                     $("#errorMessage span").text("");
-                    p1name = document.getElementById("playerName1").value;
-                    p2name = document.getElementById("playerName2").value;
+                    if($("#firstPlayerCheckbox").prop("checked")) {
+                        p1name = document.getElementById("playerName1").value;
+                        p2name = "AI (AMAF-based)";
+                        humanPlayer = 1; // player 1 is human player
+                    }
+                    else {
+                        p2name = document.getElementById("playerName1").value;
+                        p1name = "AI (AMAF-based)";
+                        humanPlayer = 2; // player 2 is human player
+                    }
                     startGame();
                 }
                 break;
@@ -130,17 +182,43 @@ $(document).ready(function () {
 function startGame() {
     gameStarted = true;
     document.getElementById("game_setup").style.display = "none";
-    document.getElementById("game_window").style.display = "block";
+    document.getElementById("game_window").style.display = "flex";
+    $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
+    $("#player2Stats .playerNameTurnText").text(p2name);
 }
 
 function mousePressed() {
-    if(gameStarted) {
+    if(gameStarted && (currentPlayer&humanPlayer)>0 && !gameFinished) {
         for (let node = 0; node < nnodes; node++)
             if (dist(mouseX, mouseY, nodes[node].x, nodes[node].y) < 10 && nodes[node].player === 0) {
                 nodes[node].player = currentPlayer;
                 currentPlayer = 3 - currentPlayer;
                 redraw();
+                checkWin();
+                if(!gameFinished) {
+                    if (currentPlayer === 1) {
+                        $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
+                        $("#player2Stats .playerNameTurnText").text(p2name);
+                    } else {
+                        $("#player1Stats .playerNameTurnText").text(p1name);
+                        $("#player2Stats .playerNameTurnText").text(p2name + "'s turn");
+                    }
+                    if (humanPlayer !== 3) {
+                        makeAImove();
+                    }
+                    checkWin();
+                }
                 return;
             }
     }
+}
+
+function makeAImove() {
+    if((currentPlayer&humanPlayer)===0) {
+
+    }
+}
+
+function checkWin() {
+
 }

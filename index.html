@@ -22,6 +22,13 @@
                 <label><input type="checkbox" name="gameMode" value="minimax" class="gameModeButton"><span class="gameModeButton">AI (Minimax-based)</span></label>
                 <label><input type="checkbox" name="gameMode" value="amaf" class="gameModeButton"><span class="gameModeButton">AI (AMAF-based)</span></label>
             </p>
+            <br/>
+        </div>
+
+        <div id="selectFirstPlayer">
+            <span id="firstPlayerLabel">Do you wish to play as the first player?</span>
+            <label><input type="checkbox" id="firstPlayerCheckbox" name="firstPlayer"><span></span></label>
+            <br/>
         </div>
 
         <div id="enterPlayerNames">
@@ -30,13 +37,13 @@
                 <label><input type="text" id="playerName1" class="playerNameTextbox" placeholder="Enter player 1's name"></label>
                 <label><input type="text" id="playerName2" class="playerNameTextbox" placeholder="Enter player 2's name"></label>
             </p>
+            <br/>
         </div>
-        <br/>
 
         <p id="startButtons">
             <label><input type="button" name="startButton" title="Start Game" value="Start Game"></label>
+            <br/>
         </p>
-        <br/>
 
         <p id="errorMessage">
             <span class="message"></span>
@@ -44,9 +51,20 @@
 
     </div>
 
-    <div id="game_window">
-        <div id="gameCanvas">
-
+    <div id="game_window" class="gameContainer">
+        <div id="player1Stats" class="gameCell playerStats">
+            <p class="playerNameTurnText">
+            </p>
+            <p class="beadsPlaced">
+            </p>
+        </div>
+        <div id="gameCanvas" class="gameBoard gameCell">
+        </div>
+        <div id="player2Stats" class="gameCell playerStats">
+            <p class="playerNameTurnText">
+            </p>
+            <p class="beadsPlaced">
+            </p>
         </div>
     </div>
 
