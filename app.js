@@ -52,7 +52,7 @@ class Game {
     gameBoard = "93Board";
     currentPlayer = 1;
     nnodes = 93;
-    adjList = int[93];
+    adjList;
     nodePlayers = [];
     BoardDsu;
 
@@ -83,18 +83,18 @@ class Game {
             default:
                 break;
         }
-        this.BoardDsu = dsu(nnodes, values);
+        this.BoardDsu = new dsu(nnodes, values);
     }
 
     make_move(node) {
         this.nodePlayers[node] = this.currentPlayer;
         for(let i = 0; i < this.adjList[node].length; i++) {
             if(this.nodePlayers[this.adjList[node][i]]===this.currentPlayer) {
-                this.dsu.union_sets(node, this.adjList[node][i]);
+                this.BoardDsu.union_sets(node, this.adjList[node][i]);
             }
         }
         this.currentPlayer = 3 - this.currentPlayer;
-        return (this.dsu.find_val(node) === 7);
+        return (this.BoardDsu.find_val(node) === 7);
     }
 
 
