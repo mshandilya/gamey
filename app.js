@@ -38,7 +38,7 @@ class dsu {
     find_set(v) {
         if(this.parent[v]===v)
             return v;
-        this.parent[v] = this.find_set(parent[v]);
+        this.parent[v] = this.find_set(this.parent[v]);
         return this.parent[v];
     }
 
@@ -91,6 +91,8 @@ class Game {
         for(let i = 0; i < this.adjList[node].length; i++) {
             if(this.nodePlayers[this.adjList[node][i]]===this.currentPlayer) {
                 this.BoardDsu.union_sets(node, this.adjList[node][i]);
+                console.log("Sets merged");
+                console.log("New value = " + this.BoardDsu.find_val(node).toString());
             }
         }
         this.currentPlayer = 3 - this.currentPlayer;
