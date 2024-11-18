@@ -75,9 +75,12 @@ function mousePressed() {
         for (let node = 0; node < nnodes; node++)
             if (dist(mouseX, mouseY, nodes[node].x, nodes[node].y) < 10 && nodes[node].player === 0) {
                 nodes[node].player = currentPlayer;
-                currentPlayer = 3 - currentPlayer;
                 redraw();
-                checkWin();
+                if(game.make_move(node)) {
+                    makeWin();
+                    gameFinished = true;
+                }
+                currentPlayer = 3 - currentPlayer;
                 if(!gameFinished) {
                     if (currentPlayer === 1) {
                         $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
@@ -89,10 +92,19 @@ function mousePressed() {
                     if (humanPlayer !== 3) {
                         app.makeAImove();
                     }
-                    checkWin();
                 }
                 return;
             }
+    }
+}
+
+function makeWin() {
+    if (currentPlayer === 1) {
+        $("#player1Stats .playerNameTurnText").text(p1name + " wins!");
+        $("#player2Stats .playerNameTurnText").text(p2name + " loses");
+    } else {
+        $("#player1Stats .playerNameTurnText").text(p1name + " loses");
+        $("#player2Stats .playerNameTurnText").text(p2name + " wins!");
     }
 }
 
