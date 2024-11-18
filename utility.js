@@ -20,6 +20,7 @@ function setup() {
     colorMode("RGB", 255);
     noLoop();
     initialize93Board();
+    redraw();
 }
 
 function initialize93Board() {
