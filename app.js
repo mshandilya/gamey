@@ -72,10 +72,10 @@ class Game {
                 for(let i = 0; i < 9; i++) {
                     values[i] |= 1;
                 }
-                for(let i = 9; i < 17; i++) {
+                for(let i = 8; i < 17; i++) {
                     values[i] |= 2;
                 }
-                for(let i = 17; i < 24; i++) {
+                for(let i = 16; i < 24; i++) {
                     values[i] |= 4;
                 }
                 values[0] |= 4;
