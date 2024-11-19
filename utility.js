@@ -7,6 +7,8 @@ let currentPlayer = 1;
 let selectedMode = "none";
 let p1name = "";
 let p2name = "";
+let p1moves = 0;
+let p2moves = 0;
 let humanPlayer = 0;
 
 let canvasSize = 500;
@@ -56,8 +58,52 @@ function startGame() {
     document.getElementById("game_window").style.display = "flex";
     $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
     $("#player2Stats .playerNameTurnText").text(p2name);
+    $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
+    $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
     if ((currentPlayer & humanPlayer) === 0)
-        makeAImove();
+        makeAImove(local_p5);
+}
+
+function makeAImove(p5) {
+    switch (selectedMode) {
+        case "mdp":
+            let node = game.bestMoveMdp();
+            nodes[node].player = currentPlayer;
+            if(currentPlayer===1)
+                p1moves+=1;
+            else
+                p2moves+=1;
+            $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
+            $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
+            p5.redraw();
+            if (game.makeMove(node)) {
+                makeWin();
+                gameFinished = true;
+            }
+            currentPlayer = 3 - currentPlayer;
+            updateTurns();
+            if(gameStarted && !gameFinished && (currentPlayer&humanPlayer)===0)
+                makeAImove();
+            break;
+        case "minimax":
+            break;
+        case "amaf":
+            break;
+        default:
+            break;
+    }
+}
+
+function updateTurns() {
+    if (!gameFinished) {
+        if (currentPlayer === 1) {
+            $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
+            $("#player2Stats .playerNameTurnText").text(p2name);
+        } else {
+            $("#player1Stats .playerNameTurnText").text(p1name);
+            $("#player2Stats .playerNameTurnText").text(p2name + "'s turn");
+        }
+    }
 }
 
 function makeWin() {
@@ -70,7 +116,7 @@ function makeWin() {
     }
 }
 
-new p5(function(p5) {
+let local_p5 = new p5(function(p5) {
     p5.setup = function() {
         let canvas = p5.createCanvas(canvasSize, canvasSize);
         canvas.parent('gameCanvas');
@@ -90,24 +136,21 @@ new p5(function(p5) {
             for (let node = 0; node < nnodes; node++)
                 if (p5.dist(p5.mouseX, p5.mouseY, nodes[node].x, nodes[node].y) < 10 && nodes[node].player === 0) {
                     nodes[node].player = currentPlayer;
+                    if(currentPlayer===1)
+                        p1moves+=1;
+                    else
+                        p2moves+=1;
+                    $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
+                    $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
                     p5.redraw();
-                    if (game.make_move(node)) {
+                    if (game.makeMove(node)) {
                         makeWin();
                         gameFinished = true;
                     }
                     currentPlayer = 3 - currentPlayer;
-                    if (!gameFinished) {
-                        if (currentPlayer === 1) {
-                            $("#player1Stats .playerNameTurnText").text(p1name + "'s turn");
-                            $("#player2Stats .playerNameTurnText").text(p2name);
-                        } else {
-                            $("#player1Stats .playerNameTurnText").text(p1name);
-                            $("#player2Stats .playerNameTurnText").text(p2name + "'s turn");
-                        }
-                        if (humanPlayer !== 3) {
-                            makeAImove();
-                        }
-                    }
+                    updateTurns();
+                    if(gameStarted && !gameFinished && (currentPlayer&humanPlayer)===0)
+                        makeAImove(p5);
                     return;
                 }
         }

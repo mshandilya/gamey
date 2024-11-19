@@ -183,17 +183,20 @@ h1 {
 .playerStats {
     display: block;
     height: 100%;
+    margin: 0.5in;
     width: 25vw;
     font-family: "Trebuchet MS", sans-serif;
-    font-size: 20px;
-    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
 }
 
 #player1Stats {
+    text-align: left;
     color: #EFEFEF;
 }
 
 #player2Stats {
+    text-align: right;
     color: #040228;
 }
 
