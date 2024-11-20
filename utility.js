@@ -113,6 +113,7 @@ function makeAImove(p5) {
 }
 
 function makeUndo() {
+    gameFinished = false;
     switch (selectedMode) {
         case "mdp":
         case "minimax":
