@@ -155,7 +155,7 @@ class Game {
     bestMoveMdp() {
         let p1rewards = [], p1n_rewards = [], p2rewards = [], p2n_rewards = [], f_rewards = [];
         // gamma + beta < 1
-        let gamma = 0.95, max_iter = 1000, beta = 0.03, delta = 1, fact = 1, max_ind = 0;
+        let gamma = 0.58, max_iter = 1000, beta = 0.4, delta = 0.59, fact = 1, max_ind = 0;
         for (let i = 0; i < this.nnodes; i++) {
             f_rewards.push(1);
             p1rewards.push([0, 0, 0]);

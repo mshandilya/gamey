@@ -130,7 +130,6 @@ function makeAImove() {
 }
 
 function makeUndo() {
-    gameFinished = false;
     switch (selectedMode) {
         case "mdp":
         case "minimax":
@@ -139,7 +138,7 @@ function makeUndo() {
             currentPlayer = 3 - currentPlayer;
             if(currentPlayer===1) {
                 p1moves--;
-                if(p2moves>0) {
+                if(p2moves>0 && !gameFinished) {
                     nodes[game.undoMove()].player = 0;
                     currentPlayer = 3 - currentPlayer;
                     p2moves--;
@@ -147,7 +146,7 @@ function makeUndo() {
             }
             else {
                 p2moves--;
-                if(p1moves>0) {
+                if(p1moves>0 && !gameFinished) {
                     nodes[game.undoMove()].player = 0;
                     currentPlayer = 3 - currentPlayer;
                     p1moves--;
@@ -157,8 +156,10 @@ function makeUndo() {
             $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
             $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
             local_p5.redraw();
+            gameFinished = false;
             break;
         case "friend":
+            gameFinished = false;
             nodes[game.undoMove()].player = 0;
             currentPlayer = 3 - currentPlayer;
             if(currentPlayer===1) {
@@ -377,7 +378,7 @@ $(document).ready(function () {
     });
 
     $("#player2Stats .playerActionButtons input[name='undo']").on("click", function () {
-        $("#player1Stats .playerActionButtons input[name='undo']").prop("disabled", true);
+        $("#player2Stats .playerActionButtons input[name='undo']").prop("disabled", true);
         makeUndo();
     });
 
