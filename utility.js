@@ -94,6 +94,10 @@ function makeAImove(p5) {
     }
 }
 
+function makeUndo() {
+
+}
+
 function updateTurns() {
     if (!gameFinished) {
         if (currentPlayer === 1) {
@@ -159,6 +163,8 @@ let local_p5 = new p5(function(p5) {
 });
 
 $(document).ready(function () {
+
+    $(".playerActionButtons input").prop("disabled", true);
 
     $("#selectGameMode input[type='checkbox']").on("change", function (){
         let $box = $(this);
@@ -278,6 +284,16 @@ $(document).ready(function () {
             default:
                 break;
         }
+    });
+
+    $("#player1Stats .playerActionButtons input[name='undo']").on("click", function () {
+        $("#player1Stats .playerActionButtons input[name='undo']").prop("disabled", true);
+        makeUndo();
+    });
+
+    $("#player2Stats .playerActionButtons input[name='undo']").on("click", function () {
+        $("#player1Stats .playerActionButtons input[name='undo']").prop("disabled", true);
+        makeUndo();
     });
 
 });

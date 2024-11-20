@@ -201,3 +201,47 @@ h1 {
     color: #040228;
 }
 
+.playerActionButtons {
+    display: block;
+}
+
+.playerActionButtons input {
+    height: 100%;
+    width: 100%;
+    display: none;
+}
+
+.playerActionButtons span {
+    display: inline-block;
+    width: 27px;
+    height: 27px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    border: 3px solid;
+    border-radius: 27px;
+}
+
+.playerActionButtons input:enabled ~ span:hover {
+    cursor: pointer;
+    background-color: #FF8877;
+}
+
+#player1Stats .playerActionButtons input:enabled ~ span:hover {
+    border-color: #E7E6E6;
+    color: #E7E6E6;
+}
+
+#player2Stats .playerActionButtons input:enabled ~ span:hover {
+    border-color: #0F042F;
+    color: #0F042F;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 700,
+  'GRAD' 0,
+  'opsz' 20
+}

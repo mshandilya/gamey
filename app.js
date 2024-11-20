@@ -1,10 +1,11 @@
 //disjoint set union (explicitly inserted --> cp)
 class dsu {
     //the dsu uses 0 based indexing
-    //this dsu uses path-optimization and performs union by size for maximum efficiency
+    //this dsu performs union by size for maximum efficiency
     parent = [];
     size = [];
     value = [];
+    union_stack = [];
 
     constructor(n, values) {
         this.parent = [];
@@ -30,16 +31,24 @@ class dsu {
             b = a;
             a = c;
         }
+        this.union_stack.push([a, b, this.value[a], this.value[b]]);
         this.parent[b] = a;
         this.value[a] |= this.value[b];
         this.size[a] += this.size[b];
     }
 
+    rollback() {
+        let last_update = this.union_stack.pop();
+        this.parent[last_update[1]] = last_update[1];
+        this.value[last_update[0]] = last_update[2];
+        this.value[last_update[1]] = last_update[3];
+        this.size[last_update[0]] -= this.size[last_update[1]];
+    }
+
     find_set(v) {
         if(this.parent[v]===v)
             return v;
-        this.parent[v] = this.find_set(this.parent[v]);
-        return this.parent[v];
+        return this.find_set(this.parent[v]);
     }
 
     find_val(v) {
@@ -55,6 +64,7 @@ class Game {
     adjList;
     nodePlayers = [];
     BoardDsu;
+    movesStack = [];
 
     constructor(gameBoard, nnodes, adjList) {
         this.gameBoard = gameBoard;
@@ -87,18 +97,30 @@ class Game {
     }
 
     makeMove(node) {
+        this.movesStack.push([node, 0]);
         this.nodePlayers[node] = this.currentPlayer;
         for(let i = 0; i < this.adjList[node].length; i++) {
-            if(this.nodePlayers[this.adjList[node][i]]===this.currentPlayer)
+            if(this.nodePlayers[this.adjList[node][i]]===this.currentPlayer) {
+                this.movesStack[this.movesStack.length-1][1]++;
                 this.BoardDsu.union_sets(node, this.adjList[node][i]);
+            }
         }
         this.currentPlayer = 3 - this.currentPlayer;
         return (this.BoardDsu.find_val(node) === 7);
     }
 
+    undoMove() {
+        let last_move = this.movesStack.pop();
+        this.nodePlayers[last_move[0]] = 0;
+        for(let i = 0; i < last_move[1]; i++)
+            this.BoardDsu.rollback();
+        this.currentPlayer = 3 - this.currentPlayer;
+        return last_move[0];
+    }
+
     bestMoveMdp() {
         let p1rewards = [], p1n_rewards = [], p2rewards = [], p2n_rewards = [], f_rewards = [];
-        let gamma = 0.8, max_iter = 1000, beta = 0.2, delta = 1, max_ind = 0;
+        let gamma = 0.95, max_iter = 1000, beta = 0, delta = 1, max_ind = 0;
         for (let i = 0; i < this.nnodes; i++) {
             f_rewards.push(1);
             p1rewards.push([0, 0, 0]);
@@ -172,6 +194,7 @@ class Game {
             for (let i = 0; i < this.nnodes; i++)
                 for(let j = 0; j<3; j++)
                     p2rewards[i][j] = p2n_rewards[i][j];
+            console.log(p1rewards);
         }
         for (let i = 0; i < this.nnodes; i++)
             for(let j = 0; j<3; j++)
@@ -182,6 +205,14 @@ class Game {
                 available.push(i);
         available.sort((a, b) => f_rewards[b] - f_rewards[a]);
         return available[0];
+    }
+
+    bestMoveMinimax() {
+
+    }
+
+    bestMoveAMAF() {
+
     }
 }
 
