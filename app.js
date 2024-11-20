@@ -261,7 +261,7 @@ class Game {
             [nextBestMove, nextBestValue] = this.bestMoveMinimax(depth+1, -beta, -alpha);
             nextBestValue *= -1;
             this.undoMove();
-            if (nextBestValue > alpha) {
+            if (nextBestValue >= alpha) {
                 currentBestMove = exploringNode;
                 alpha = nextBestValue;
                 if(alpha>=beta)
