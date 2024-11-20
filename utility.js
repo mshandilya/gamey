@@ -95,7 +95,50 @@ function makeAImove(p5) {
 }
 
 function makeUndo() {
-
+    switch (selectedMode) {
+        case "mdp":
+        case "minimax":
+        case "amaf":
+            nodes[game.undoMove()].player = 0;
+            currentPlayer = 3 - currentPlayer;
+            if(currentPlayer===1) {
+                p1moves--;
+                if(p2moves>0) {
+                    nodes[game.undoMove()].player = 0;
+                    currentPlayer = 3 - currentPlayer;
+                    p2moves--;
+                }
+            }
+            else {
+                p2moves--;
+                if(p1moves>0) {
+                    nodes[game.undoMove()].player = 0;
+                    currentPlayer = 3 - currentPlayer;
+                    p1moves--;
+                }
+            }
+            updateTurns();
+            $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
+            $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
+            local_p5.redraw();
+            break;
+        case "friend":
+            nodes[game.undoMove()].player = 0;
+            currentPlayer = 3 - currentPlayer;
+            if(currentPlayer===1) {
+                p1moves--;
+            }
+            else {
+                p2moves--;
+            }
+            updateTurns();
+            $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
+            $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
+            local_p5.redraw();
+            break;
+        default:
+            break;
+    }
 }
 
 function updateTurns() {
@@ -140,10 +183,16 @@ let local_p5 = new p5(function(p5) {
             for (let node = 0; node < nnodes; node++)
                 if (p5.dist(p5.mouseX, p5.mouseY, nodes[node].x, nodes[node].y) < 10 && nodes[node].player === 0) {
                     nodes[node].player = currentPlayer;
-                    if(currentPlayer===1)
-                        p1moves+=1;
-                    else
-                        p2moves+=1;
+                    if(currentPlayer===1) {
+                        p1moves++;
+                        $("#player1Stats .playerActionButtons input[name='undo']").prop("disabled", false);
+                        $("#player2Stats .playerActionButtons input[name='undo']").prop("disabled", true);
+                    }
+                    else {
+                        p2moves++;
+                        $("#player1Stats .playerActionButtons input[name='undo']").prop("disabled", true);
+                        $("#player2Stats .playerActionButtons input[name='undo']").prop("disabled", false);
+                    }
                     $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
                     $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
                     p5.redraw();

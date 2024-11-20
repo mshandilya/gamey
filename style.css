@@ -223,6 +223,20 @@ h1 {
     border-radius: 27px;
 }
 
+.playerActionButtons input:disabled ~ span {
+    background-color: #FF8877;
+}
+
+#player1Stats .playerActionButtons input:disabled ~ span {
+    border-color: #E7E6E6;
+    color: #E7E6E6;
+}
+
+#player2Stats .playerActionButtons input:disabled ~ span {
+    border-color: #0F042F;
+    color: #0F042F;
+}
+
 .playerActionButtons input:enabled ~ span:hover {
     cursor: pointer;
     background-color: #FF8877;
