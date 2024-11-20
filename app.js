@@ -154,7 +154,7 @@ class Game {
 
     bestMoveMdp() {
         let p1rewards = [], p1n_rewards = [], p2rewards = [], p2n_rewards = [], f_rewards = [];
-        // gamma + beta <= 1
+        // gamma + beta < 1
         let gamma = 0.95, max_iter = 1000, beta = 0.03, delta = 1, fact = 1, max_ind = 0;
         for (let i = 0; i < this.nnodes; i++) {
             f_rewards.push(1);
@@ -242,71 +242,33 @@ class Game {
         return available[0];
     }
 
-    minimax(moveOrder, depth, max_depth, isMaxPlayer, alpha, beta){
-        console.log(depth, max_depth, isMaxPlayer, alpha, beta);
-        if(moveOrder.length == 0 || depth == max_depth){
-            let [_, nodeValue] = this.evalPositions();
-            if(!isMaxPlayer){
-                return [null, 1-nodeValue];
-            }
-            return [null, nodeValue];
-        }
-        if(isMaxPlayer){
-            let bestMove = moveOrder[0], bestValue = 0;
-            for(let i = 0;i < moveOrder.length;i++){
-                if(this.makeMove(moveOrder[i])){
-                    return [moveOrder[i], 1];
-                }
-                let newMoveOrder = [...moveOrder];
-                newMoveOrder.slice(i,1);
-                let [bestMove, posValue] = this.minimax(newMoveOrder, depth+1, max_depth, !isMaxPlayer, alpha, beta);
-                this.undoMove();
-                if(posValue > bestValue){
-                    bestValue = posValue;
-                    bestMove = moveOrder[i];
-                }
-                alpha = Math.max(alpha, bestValue);
-                if(beta <= alpha){
-                    break;
-                }
-            }
-            return [bestMove, bestValue];
-        }else{
-            let bestMove = moveOrder[0], bestValue = 1;
-            for(let i = 0;i < moveOrder.length;i++){
-                if(this.makeMove(moveOrder[i])){
-                    return [moveOrder[i], 0];
-                }
-                let newMoveOrder = [...moveOrder];
-                newMoveOrder.slice(i,1);
-                let [bestMove, posValue] = this.minimax(newMoveOrder, depth+1, max_depth, !isMaxPlayer, alpha, beta);
-                posValue = 1-posValue;
-                this.undoMove();
-                if(posValue < bestValue){
-                    bestValue = posValue;
-                    bestMove = moveOrder[i];
-                }
-                beta = Math.min(beta, bestValue);
-                if(beta <= alpha){
-                    break;
-                }
-            }
-            return [bestMove, bestValue];
-        }
-    }
-
-    bestMoveMinimax(){
-        let moveOrder = this.evalPositions()[0];
-        let available = [];
-        for(let i = 0;i < this.nnodes;i++){
-            if(this.nodePlayers[i] === 0){
+    bestMoveMinimax(depth = 0, alpha = -1, beta = 1){
+        let [moveOrder, myVal] = this.evalPositions(), maxElem = 4, maxDepth = 3, available = [], currentBestMove, nextBestMove, nextBestValue;
+        for(let i = 0; i < this.nnodes; i++)
+            if(this.nodePlayers[i] === 0)
                 available.push(i);
+        available = available.sort((a, b) => moveOrder[b] - moveOrder[a]).slice(0, maxElem);
+        console.log(available);
+        currentBestMove = -1;
+        if(depth===maxDepth)
+            return [-1, myVal];
+        for(let i = 0; i < maxElem; i++) {
+            let exploringNode = available[i];
+            if(this.makeMove(exploringNode)) {
+                this.undoMove();
+                return [exploringNode, 1];
+            }
+            [nextBestMove, nextBestValue] = this.bestMoveMinimax(depth+1, -beta, -alpha);
+            nextBestValue *= -1;
+            this.undoMove();
+            if (nextBestValue > alpha) {
+                currentBestMove = exploringNode;
+                alpha = nextBestValue;
+                if(alpha>=beta)
+                    return [currentBestMove, alpha];
             }
         }
-        available.sort((a, b) => moveOrder[b] - moveOrder[a]);
-        let [bestMove, _] = this.minimax(available, 0, 1, true, 0, 1);
-        console.log(bestMove);
-        return bestMove;
+        return [currentBestMove, alpha];
     }
 
     bestMoveAMAF() {

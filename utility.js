@@ -64,7 +64,7 @@ function startGame() {
         makeAImove(local_p5);
 }
 
-function makeAImove(p5) {
+function makeAImove() {
     let node;
     switch (selectedMode) {
         case "mdp":
@@ -76,7 +76,7 @@ function makeAImove(p5) {
                 p2moves+=1;
             $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
             $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
-            p5.redraw();
+            local_p5.redraw();
             if (game.makeMove(node)) {
                 makeWin();
                 gameFinished = true;
@@ -87,6 +87,23 @@ function makeAImove(p5) {
                 makeAImove();
             break;
         case "minimax":
+            node = game.bestMoveMinimax()[0];
+            nodes[node].player = currentPlayer;
+            if(currentPlayer===1)
+                p1moves+=1;
+            else
+                p2moves+=1;
+            $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
+            $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
+            local_p5.redraw();
+            if (game.makeMove(node)) {
+                makeWin();
+                gameFinished = true;
+            }
+            currentPlayer = 3 - currentPlayer;
+            updateTurns();
+            if(gameStarted && !gameFinished && (currentPlayer&humanPlayer)===0)
+                makeAImove();
             break;
         case "amaf":
             node = game.bestMoveAMAF();
@@ -97,7 +114,7 @@ function makeAImove(p5) {
                 p2moves+=1;
             $("#player1Stats .beadsPlaced").text("Beads placed: "+p1moves.toString());
             $("#player2Stats .beadsPlaced").text("Beads placed: "+p2moves.toString());
-            p5.redraw();
+            local_p5.redraw();
             if (game.makeMove(node)) {
                 makeWin();
                 gameFinished = true;
