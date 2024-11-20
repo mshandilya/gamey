@@ -25,7 +25,7 @@ class dsu {
         a = this.find_set(a);
         b = this.find_set(b);
         if(a===b)
-            return;
+            return false;
         if(this.size[a] < this.size[b]) {
             let c = b;
             b = a;
@@ -35,6 +35,7 @@ class dsu {
         this.parent[b] = a;
         this.value[a] |= this.value[b];
         this.size[a] += this.size[b];
+        return true;
     }
 
     rollback() {
@@ -101,8 +102,8 @@ class Game {
         this.nodePlayers[node] = this.currentPlayer;
         for(let i = 0; i < this.adjList[node].length; i++) {
             if(this.nodePlayers[this.adjList[node][i]]===this.currentPlayer) {
-                this.movesStack[this.movesStack.length-1][1]++;
-                this.BoardDsu.union_sets(node, this.adjList[node][i]);
+                if(this.BoardDsu.union_sets(node, this.adjList[node][i]))
+                    this.movesStack[this.movesStack.length-1][1]++;
             }
         }
         this.currentPlayer = 3 - this.currentPlayer;
@@ -118,9 +119,42 @@ class Game {
         return last_move[0];
     }
 
+    evalPositions() {
+        let node, wp, cp = this.currentPlayer, temp_moves, win_iters = 0, max_iter = 1000, nodePlayed = [], nodeWon = [];
+        for(let i = 0; i < this.nnodes; i++) {
+            nodePlayed.push(0);
+            nodeWon.push(0);
+        }
+        for(let iter = 0; iter<max_iter; iter++) {
+            temp_moves = 0;
+            node = Math.floor(Math.random() * this.nnodes);
+            while (this.nodePlayers[node] !== 0)
+                node = Math.floor(Math.random() * this.nnodes);
+            temp_moves++;
+            while (!this.makeMove(node)) {
+                while (this.nodePlayers[node] !== 0)
+                    node = Math.floor(Math.random() * this.nnodes);
+                temp_moves++;
+            }
+            wp = 3 - this.currentPlayer; // winning player
+            while ((temp_moves--) > 0) {
+                node = this.undoMove();
+                nodePlayed[node]++;
+                if (this.currentPlayer === wp)
+                    nodeWon[node]++;
+            }
+            if(wp===cp)
+                win_iters++;
+        }
+        for(let i = 0; i<this.nnodes; i++)
+            if(nodePlayed[i]>0)
+                nodeWon[i] = nodeWon[i]/nodePlayed[i];
+        return [nodeWon, win_iters/max_iter];
+    }
+
     bestMoveMdp() {
         let p1rewards = [], p1n_rewards = [], p2rewards = [], p2n_rewards = [], f_rewards = [];
-        let gamma = 0.95, max_iter = 1000, beta = 0, delta = 1, max_ind = 0;
+        let gamma = 0.95, max_iter = 1000, beta = 0.7, delta = 1, fact = 0.5, max_ind = 0;
         for (let i = 0; i < this.nnodes; i++) {
             f_rewards.push(1);
             p1rewards.push([0, 0, 0]);
@@ -163,22 +197,22 @@ class Game {
             for (let i = 0; i < this.nnodes; i++) {
                 for (let j = 0; j < this.adjList[i].length; j++) {
                     if(this.nodePlayers[this.adjList[i][j]]===0) {
-                        p1n_rewards[i][0] = Math.max(p1n_rewards[i][0], beta * p2rewards[i][0] + gamma * p1rewards[this.adjList[i][j]][0]);
-                        p1n_rewards[i][1] = Math.max(p1n_rewards[i][1], beta * p2rewards[i][1] + gamma * p1rewards[this.adjList[i][j]][1]);
-                        p1n_rewards[i][2] = Math.max(p1n_rewards[i][2], beta * p2rewards[i][2] + gamma * p1rewards[this.adjList[i][j]][2]);
-                        p2n_rewards[i][0] = Math.max(p2n_rewards[i][0], beta * p1rewards[i][0] + gamma * p2rewards[this.adjList[i][j]][0]);
-                        p2n_rewards[i][1] = Math.max(p2n_rewards[i][1], beta * p1rewards[i][1] + gamma * p2rewards[this.adjList[i][j]][1]);
-                        p2n_rewards[i][2] = Math.max(p2n_rewards[i][2], beta * p1rewards[i][2] + gamma * p2rewards[this.adjList[i][j]][2]);
+                        p1n_rewards[i][0] = Math.max(p1n_rewards[i][0], (beta * p2rewards[i][0] + gamma * p1rewards[this.adjList[i][j]][0])*fact);
+                        p1n_rewards[i][1] = Math.max(p1n_rewards[i][1], (beta * p2rewards[i][1] + gamma * p1rewards[this.adjList[i][j]][1])*fact);
+                        p1n_rewards[i][2] = Math.max(p1n_rewards[i][2], (beta * p2rewards[i][2] + gamma * p1rewards[this.adjList[i][j]][2])*fact);
+                        p2n_rewards[i][0] = Math.max(p2n_rewards[i][0], (beta * p1rewards[i][0] + gamma * p2rewards[this.adjList[i][j]][0])*fact);
+                        p2n_rewards[i][1] = Math.max(p2n_rewards[i][1], (beta * p1rewards[i][1] + gamma * p2rewards[this.adjList[i][j]][1])*fact);
+                        p2n_rewards[i][2] = Math.max(p2n_rewards[i][2], (beta * p1rewards[i][2] + gamma * p2rewards[this.adjList[i][j]][2])*fact);
                     }
                     else if(this.nodePlayers[this.adjList[i][j]]===this.currentPlayer) {
-                        p1n_rewards[i][0] = Math.max(p1n_rewards[i][0], beta * p2rewards[i][0] + delta * p1rewards[this.adjList[i][j]][0]);
-                        p1n_rewards[i][1] = Math.max(p1n_rewards[i][1], beta * p2rewards[i][1] + delta * p1rewards[this.adjList[i][j]][1]);
-                        p1n_rewards[i][2] = Math.max(p1n_rewards[i][2], beta * p2rewards[i][2] + delta * p1rewards[this.adjList[i][j]][2]);
+                        p1n_rewards[i][0] = Math.max(p1n_rewards[i][0], (beta * p2rewards[i][0] + delta * p1rewards[this.adjList[i][j]][0])*fact);
+                        p1n_rewards[i][1] = Math.max(p1n_rewards[i][1], (beta * p2rewards[i][1] + delta * p1rewards[this.adjList[i][j]][1])*fact);
+                        p1n_rewards[i][2] = Math.max(p1n_rewards[i][2], (beta * p2rewards[i][2] + delta * p1rewards[this.adjList[i][j]][2])*fact);
                     }
                     else {
-                        p2n_rewards[i][0] = Math.max(p2n_rewards[i][0], beta * p1rewards[i][0] + delta * p2rewards[this.adjList[i][j]][0]);
-                        p2n_rewards[i][1] = Math.max(p2n_rewards[i][1], beta * p1rewards[i][1] + delta * p2rewards[this.adjList[i][j]][1]);
-                        p2n_rewards[i][2] = Math.max(p2n_rewards[i][2], beta * p1rewards[i][2] + delta * p2rewards[this.adjList[i][j]][2]);
+                        p2n_rewards[i][0] = Math.max(p2n_rewards[i][0], (beta * p1rewards[i][0] + delta * p2rewards[this.adjList[i][j]][0])*fact);
+                        p2n_rewards[i][1] = Math.max(p2n_rewards[i][1], (beta * p1rewards[i][1] + delta * p2rewards[this.adjList[i][j]][1])*fact);
+                        p2n_rewards[i][2] = Math.max(p2n_rewards[i][2], (beta * p1rewards[i][2] + delta * p2rewards[this.adjList[i][j]][2])*fact);
                     }
                 }
             }
@@ -212,7 +246,12 @@ class Game {
     }
 
     bestMoveAMAF() {
-
+        let evalResult = this.evalPositions()[0], available = [];
+        for(let i = 0; i < this.nnodes; i++)
+            if(this.nodePlayers[i] === 0)
+                available.push(i);
+        available.sort((a, b)=>evalResult[b] - evalResult[a]);
+        return available[0];
     }
 }
 
