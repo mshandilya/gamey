@@ -242,8 +242,71 @@ class Game {
         return available[0];
     }
 
-    bestMoveMinimax() {
+    minimax(moveOrder, depth, max_depth, isMaxPlayer, alpha, beta){
+        console.log(depth, max_depth, isMaxPlayer, alpha, beta);
+        if(moveOrder.length == 0 || depth == max_depth){
+            let [_, nodeValue] = this.evalPositions();
+            if(!isMaxPlayer){
+                return [null, 1-nodeValue];
+            }
+            return [null, nodeValue];
+        }
+        if(isMaxPlayer){
+            let bestMove = moveOrder[0], bestValue = 0;
+            for(let i = 0;i < moveOrder.length;i++){
+                if(this.makeMove(moveOrder[i])){
+                    return [moveOrder[i], 1];
+                }
+                let newMoveOrder = [...moveOrder];
+                newMoveOrder.slice(i,1);
+                let [bestMove, posValue] = this.minimax(newMoveOrder, depth+1, max_depth, !isMaxPlayer, alpha, beta);
+                this.undoMove();
+                if(posValue > bestValue){
+                    bestValue = posValue;
+                    bestMove = moveOrder[i];
+                }
+                alpha = Math.max(alpha, bestValue);
+                if(beta <= alpha){
+                    break;
+                }
+            }
+            return [bestMove, bestValue];
+        }else{
+            let bestMove = moveOrder[0], bestValue = 1;
+            for(let i = 0;i < moveOrder.length;i++){
+                if(this.makeMove(moveOrder[i])){
+                    return [moveOrder[i], 0];
+                }
+                let newMoveOrder = [...moveOrder];
+                newMoveOrder.slice(i,1);
+                let [bestMove, posValue] = this.minimax(newMoveOrder, depth+1, max_depth, !isMaxPlayer, alpha, beta);
+                posValue = 1-posValue;
+                this.undoMove();
+                if(posValue < bestValue){
+                    bestValue = posValue;
+                    bestMove = moveOrder[i];
+                }
+                beta = Math.min(beta, bestValue);
+                if(beta <= alpha){
+                    break;
+                }
+            }
+            return [bestMove, bestValue];
+        }
+    }
 
+    bestMoveMinimax(){
+        let moveOrder = this.evalPositions()[0];
+        let available = [];
+        for(let i = 0;i < this.nnodes;i++){
+            if(this.nodePlayers[i] === 0){
+                available.push(i);
+            }
+        }
+        available.sort((a, b) => moveOrder[b] - moveOrder[a]);
+        let [bestMove, _] = this.minimax(available, 0, 1, true, 0, 1);
+        console.log(bestMove);
+        return bestMove;
     }
 
     bestMoveAMAF() {
